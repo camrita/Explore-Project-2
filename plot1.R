@@ -1,15 +1,19 @@
-nei <- readRDS("data/summarySCC_PM25.rds")
-scc <- readRDS("data/Source_Classification_Code.rds")
+NEI <- readRDS("data/summarySCC_PM25.rds")
+SCC <- readRDS("data/Source_Classification_Code.rds")
 
-library('data.table')
+aggdata <- aggregate(Emissions~year,data = NEI,FUN = sum)
 
-df <- data.table(nei)
+## Create BarPlot and Export as PNG file
 
-by_year <- df[, list(emissions=sum(Emissions)), by=year]
-by_year$year = as.numeric(as.character(by_year$year))
-by_year$emissions = as.numeric(as.character(by_year$emissions))
+png(filename = "plot1.png",width = 480, height = 480,units = "px")
 
-plot(by_year$year, by_year$emissions, type='l', ylab='Emissions', xlab='Year')
+barplot(
+  (aggdata$Emissions)/10^6,
+  names.arg = aggdata$year,
+  col = "blue",
+  xlab = "Year",
+  ylab = "PM2.5 Emissions (10^6 Tons)",
+  main = "PM2.5 Emissions for all US Sources (Total)"
+)
 
-dev.copy(png, file="plot1.png", width=480, height=480)
 dev.off()
